@@ -14,7 +14,7 @@ app.post("/create-payment-intent", async (req, res) => {
   const { price } = req.body;
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: price*100,
+    amount: price * 100,
     currency: "usd",
   });
 
@@ -35,11 +35,12 @@ app.post('/create-subscription', async (req, res) => {
       default_payment_method: paymentMethod,
     },
   });
-  
+
   // create a stripe subscription
   const subscription = await stripe.subscriptions.create({
     customer: customer.id,
     items: [{ price: priceId }],
+    trial_period_days: 14,
     payment_settings: {
       payment_method_options: {
         card: {
@@ -53,15 +54,15 @@ app.post('/create-subscription', async (req, res) => {
   });
 
   // return the client secret and subscription id
-  res.send( {
-    clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+  res.send({
+    clientSecret: subscription?.latest_invoice?.payment_intent?.client_secret,
     subscriptionId: subscription.id,
   });
 })
 
 app.get("/test", async (req, res) => {
-    res.send("test shohid");
-  });
+  res.send("test shohid");
+});
 
 app.listen(PORT, () => {
   console.log(`app is listening on port ~${PORT}`);
